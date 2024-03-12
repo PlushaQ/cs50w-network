@@ -15,5 +15,5 @@ class PostForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
 
         if user:
-            self.instance.user.id = user.id
+            self.instance.owner = user
         
