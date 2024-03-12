@@ -7,7 +7,7 @@ class PostForm(forms.ModelForm):
         model = Post
         fields = ['content']
         widgets = {
-            'content': forms.Textarea(attrs={'class': 'form-control', 'rows': 4})
+            'content': forms.Textarea(attrs={'id': 'new-post-textarea', 'class': 'form-control', 'rows': 4})
         }
 
     def __init__(self, *args, **kwargs):

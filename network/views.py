@@ -12,7 +12,6 @@ def create_new_post_form(request):
         form = PostForm(request.POST, user=request.user)
         if form.is_valid():
             form.save()
-            return redirect('index')
     else:
         form = PostForm()
     
@@ -25,7 +24,6 @@ def index(request):
     context = {
         'form': form
     }
-    print('a')
     return render(request, "network/index.html", context)
 
 
