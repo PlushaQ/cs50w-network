@@ -6,18 +6,23 @@ from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
 
+import json
+
 from .models import User, Post
 from .forms import PostForm
 
-def create_new_post_form(request):
-    if request.method == "POST":
-        form = PostForm(request.POST, user=request.user)
-        if form.is_valid():
-            form.save()
-    else:
-        form = PostForm()
+def create_new_post(request):
+    if request.method != "POST":
+        return JsonResponse({"error": "POST request required."}, status=400)
     
-    return form
+    data = json.loads(request.body)
+    user = User.objects.get(pk=request.user.id)
+    post = Post(owner=user, content=data['content'])
+    post.save()
+
+
+    return JsonResponse({'response': 'response OK'}, status=200)
+
 
 
 @login_required
@@ -28,11 +33,7 @@ def get_all_posts(request):
 
 
 def index(request):
-    form = create_new_post_form(request)
-    context = {
-        'form': form,
-    }
-    return render(request, "network/index.html", context)
+    return render(request, "network/index.html")
 
 
 def login_view(request):

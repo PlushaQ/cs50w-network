@@ -5,6 +5,18 @@ document.addEventListener('DOMContentLoaded', function() {
   showAllPosts()
 });
 
+function getCookie(name) {
+  const cookies = document.cookie.split(';');
+  for (let i = 0; i < cookies.length; i++) {
+    const cookie = cookies[i].trim();
+    if (cookie.startsWith(name + '=')) {
+      return cookie.substring(name.length + 1);
+    }
+  }
+  return null;
+}
+
+
 
 function countChars() {
     let text = document.getElementById('new-post-textarea').value;
@@ -17,8 +29,32 @@ function clearNewPostForm() {
 
 }
 
+function getFormInfo() {
+  let content = document.getElementById('new-post-textarea').value;
+  return {
+    content: content,
+  }
+}
+
+function send_data_to_server_and_process_response() {
+  const content = getFormInfo()
+  const csrftoken = getCookie('csrftoken');
+
+  return fetch('/posts/create', {
+    method: 'POST',
+    headers: {
+      'X-CSRFToken': csrftoken,
+    },
+    body: JSON.stringify(content)
+  }).then(response => response.json())
+  .then(result => {
+      console.log(result);
+  });
+}
+
 function createNewPost(event) {
   event.preventDefault()
+  send_data_to_server_and_process_response()
   clearNewPostForm()
 }
 
