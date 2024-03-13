@@ -11,6 +11,9 @@ class Post(models.Model):
     content = models.TextField(max_length=300)
     created = models.DateTimeField(editable=False)
     last_modified = models.DateTimeField()
+
+    def __str__(self) -> str:
+        return f'Post by {self.owner} created at {self.created.strftime("%H:%M:%S %d.%m.%Y")}'
     
     def serialize(self):
         return {

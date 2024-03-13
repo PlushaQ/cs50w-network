@@ -62,6 +62,7 @@ function createNewPost(event) {
   event.preventDefault()
   send_data_to_server_and_process_response()
   clearNewPostForm()
+  countChars() // resets counter
 }
 
 function getAllPosts() {
