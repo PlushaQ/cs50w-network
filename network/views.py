@@ -11,21 +11,23 @@ import json
 from .models import User, Post
 from .forms import PostForm
 
+@login_required
 def create_new_post(request):
     if request.method != "POST":
         return JsonResponse({"error": "POST request required."}, status=400)
     
     data = json.loads(request.body)
-    user = User.objects.get(pk=request.user.id)
-    post = Post(owner=user, content=data['content'])
+    owner = User.objects.get(pk=request.user.id)
+    content = data.get('content', '')
+    if not content:
+        return JsonResponse({'error': 'You need to provide content of the post'}, status=400)
+    post = Post(owner=owner, content=content)
     post.save()
-
 
     return JsonResponse({'response': 'response OK'}, status=200)
 
 
 
-@login_required
 def get_all_posts(request):
     posts = Post.objects.all()
     serialized_posts = [post.serialize() for post in posts]

@@ -1,6 +1,12 @@
 document.addEventListener('DOMContentLoaded', function() {
-  document.getElementById('new-post-textarea').addEventListener('input', () => countChars());
-  document.getElementById('new-post-form').addEventListener('submit', createNewPost);
+  const textarea = document.getElementById('new-post-textarea');
+  const form = document.getElementById('new-post-form');
+
+  // Check if textarea and form exist before adding event listeners
+  if (textarea && form) {
+    textarea.addEventListener('input', () => countChars());
+    form.addEventListener('submit', createNewPost);
+  }
   
   showAllPosts()
 });
