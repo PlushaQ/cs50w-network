@@ -15,13 +15,17 @@ class Post(models.Model):
     def __str__(self) -> str:
         return f'Post by {self.owner} created at {self.created.strftime("%H:%M:%S %d.%m.%Y")}'
     
-    def serialize(self):
+    def serialize(self, current_user=None):
+        likes = Like.get_number_of_likes(self)
+        is_liked = self.likes.filter(user=current_user).exists() if current_user else False
         return {
             "id": self.id,
             "owner": self.owner.username,
             "content": self.content,
-            "created": self.created,
-            "last_modified": self.last_modified,
+            "created": self.created.strftime("%H:%M:%S %d.%m.%Y"),
+            "last_modified": self.last_modified.strftime("%H:%M:%S %d.%m.%Y"),
+            "number_of_likes": likes,
+            "is_liked": is_liked,
         }
 
     def save(self, *args, **kwargs):
@@ -33,6 +37,10 @@ class Post(models.Model):
 
 
 class Like(models.Model):
-    post = models.ForeignKey(Post, on_delete=models.CASCADE)
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='likes')
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
+    @classmethod
+    def get_number_of_likes(cls, post):
+        number_of_likes = cls.objects.filter(post=post).count()
+        return number_of_likes

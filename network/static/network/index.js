@@ -71,6 +71,25 @@ function getAllPosts() {
     return response }
     )
 }
+function addOrRemoveLike(post_id) {
+  const csrftoken = getCookie('csrftoken');
+  fetch(`/like/${post_id}`,
+  {
+    method: "POST",
+    headers: {
+      'X-CSRFToken': csrftoken,
+    },
+  })
+  .then(response => response.json()
+  .then(data => {
+    const likes_element = document.getElementById(`likes-${post_id}`);
+    likes_element.innerHTML = `Likes: ${data.number_of_likes}`
+  }
+      
+      
+    )
+  )
+}
 
 function showAllPosts() {
   const postsContainer = document.getElementById('all_posts')
@@ -84,6 +103,8 @@ function showAllPosts() {
           <p> ${post.owner}</p>
           <p> ${post.content}</p>
           <p> ${post.created}</p>
+          <p id="likes-${post.id}"> Likes: ${post.number_of_likes}</p>
+          <button onclick="addOrRemoveLike(${post.id})">Like</button>
         </div>
       `
       postsContainer.appendChild(postDiv);

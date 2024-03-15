@@ -8,7 +8,7 @@ from django.contrib.auth.decorators import login_required
 
 import json
 
-from .models import User, Post
+from .models import User, Post, Like
 from .forms import PostForm
 
 @login_required
@@ -29,8 +29,8 @@ def create_new_post(request):
 
 
 def get_all_posts(request):
-    posts = Post.objects.all()
-    serialized_posts = [post.serialize() for post in posts]
+    posts = Post.objects.all().order_by('-created')
+    serialized_posts = [post.serialize(current_user=request.user) for post in posts]
     return JsonResponse(serialized_posts, safe=False)
 
 
@@ -88,3 +88,20 @@ def register(request):
         return HttpResponseRedirect(reverse("index"))
     else:
         return render(request, "network/register.html")
+
+
+def add_or_remove_like(request, post_id):
+    if request.user.is_authenticated and request.method == "POST":
+        post = Post.objects.get(pk=post_id)
+        like, created = Like.objects.get_or_create(user=request.user, post=post)
+        number_of_likes = Like.get_number_of_likes(post)
+        
+        if not created:
+            like.delete()
+            return JsonResponse({'message': 'Like removed', 'number_of_likes': number_of_likes}, status=200)
+        else:
+            return JsonResponse({'message': 'Like added', 'number_of_likes': number_of_likes}, status=200)
+
+    else:
+        return redirect('login')
+    
