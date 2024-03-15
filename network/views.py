@@ -94,13 +94,13 @@ def add_or_remove_like(request, post_id):
     if request.user.is_authenticated and request.method == "POST":
         post = Post.objects.get(pk=post_id)
         like, created = Like.objects.get_or_create(user=request.user, post=post)
-        number_of_likes = Like.get_number_of_likes(post)
-        
         if not created:
             like.delete()
-            return JsonResponse({'message': 'Like removed', 'number_of_likes': number_of_likes}, status=200)
+            message = 'like removed'
         else:
-            return JsonResponse({'message': 'Like added', 'number_of_likes': number_of_likes}, status=200)
+            message = 'like added'
+        number_of_likes = Like.get_number_of_likes(post)
+        return JsonResponse({'message': message, 'number_of_likes': number_of_likes}, status=200)
 
     else:
         return redirect('login')
