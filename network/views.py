@@ -27,7 +27,6 @@ def create_new_post(request):
     return JsonResponse({'response': 'response OK'}, status=200)
 
 
-
 def get_all_posts(request):
     posts = Post.objects.all().order_by('-created')
     serialized_posts = [post.serialize(current_user=request.user) for post in posts]
@@ -104,4 +103,7 @@ def add_or_remove_like(request, post_id):
 
     else:
         return redirect('login')
-    
+
+def profile_page(request, username):
+    user = User.objects.get(username=username)
+    return render(request, "network/profile_page.html", {'user_profile': user })

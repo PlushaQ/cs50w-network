@@ -44,3 +44,7 @@ class Like(models.Model):
     def get_number_of_likes(cls, post):
         number_of_likes = cls.objects.filter(post=post).count()
         return number_of_likes
+
+class Follower(models.Model):
+    follower = models.ForeignKey(User, on_delete=models.CASCADE, related_name='followers')
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
