@@ -9,7 +9,6 @@ from django.contrib.auth.decorators import login_required
 import json
 
 from .models import User, Post, Like
-from .forms import PostForm
 
 @login_required
 def create_new_post(request):
@@ -96,10 +95,17 @@ def add_or_remove_like(request, post_id):
         if not created:
             like.delete()
             message = 'like removed'
+            is_liked = False
         else:
             message = 'like added'
+            is_liked = True
         number_of_likes = Like.get_number_of_likes(post)
-        return JsonResponse({'message': message, 'number_of_likes': number_of_likes}, status=200)
+        context = {
+            'message': message,
+            'number_of_likes': number_of_likes,
+            'is_liked': is_liked,
+            }
+        return JsonResponse(context, status=200)
 
     else:
         return redirect('login')

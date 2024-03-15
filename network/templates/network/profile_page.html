@@ -1,4 +1,5 @@
 {% extends "network/layout.html" %}
+{% load static %}
 
 {% block body %}
 
@@ -6,5 +7,14 @@
 {% if user.is_authenticated and user.id != user_profile.id %}
 <button id="follow-button"></button>
 {% endif %}
+
+{% endblock %}
+
+
+<!-- Scripts --> 
+{% block scripts %}
+<script src="https://unpkg.com/react@17/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@17/umd/react-dom.production.min.js"></script>
+<script src="{% static 'network/profile.js' %}"></script>
 
 {% endblock %}

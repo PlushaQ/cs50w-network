@@ -17,7 +17,9 @@ class Post(models.Model):
     
     def serialize(self, current_user=None):
         likes = Like.get_number_of_likes(self)
-        is_liked = self.likes.filter(user=current_user).exists() if current_user else False
+        is_liked = False
+        if current_user and current_user.is_authenticated:
+            is_liked = self.likes.filter(user=current_user).exists()
         return {
             "id": self.id,
             "owner": self.owner.username,
