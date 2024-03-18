@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', function() {
     form.addEventListener('submit', createNewPost);
   }
   
-  showAllPosts()
+  showPosts('all')
 });
 
 const user_authenticated = document.getElementById('global-data').getAttribute('data-user-authenticated');
@@ -32,6 +32,8 @@ function countChars() {
     let charCount = 300 - text.length;
     document.getElementById('char-counter').innerText = `Remaining characters: ${charCount}`
 }
+
+// Creating new post
 
 function clearNewPostForm() {
   document.querySelector('#new-post-textarea').value = "";
@@ -68,12 +70,51 @@ function createNewPost(event) {
   countChars() // resets counter
 }
 
-function getAllPosts() {
-  return fetch('/posts/').then(response => response.json())
+// Showing the posts
+
+function getPosts(criteria) {
+  return fetch(`/posts/${criteria}`).then(response => response.json())
   .then(response => {
     return response }
     )
 }
+
+function createPostDiv(post) {
+    const postDiv = document.createElement('div');
+    postDiv.classList.add('post-container');
+    postDiv.innerHTML = `
+      <div class="post">
+        <a href="/users/${post.owner}"><p> ${post.owner}</p></a>
+        <p> ${post.content}</p>
+        <p> ${post.created}</p>
+        <p id="likes-${post.id}"> Likes: ${post.number_of_likes}</p>
+      </div>
+    `
+    if (user_authenticated === 'true') {
+      const likeButton = document.createElement('button');
+      likeButton.id = `like-button-${post.id}`
+      likeButton.textContent = post.is_liked ? 'Dislike': 'Like';
+      likeButton.classList.add('btn')
+      likeButton.classList.add(`btn-${post.is_liked ? "danger": 'success'}`);
+      likeButton.onclick = () => addOrRemoveLike(post.id);
+      postDiv.querySelector('.post').appendChild(likeButton);
+    }
+    return postDiv
+  }
+
+export function showPosts(criteria) {
+  const postsContainer = document.getElementById('all_posts')
+  getPosts(criteria)
+  .then(posts => {
+    posts.forEach(post => {
+      const postDiv = createPostDiv(post);
+      postsContainer.appendChild(postDiv);
+    });
+  });
+}
+
+
+// Likes functions
 
 function addOrRemoveLike(postId) {
   const csrftoken = getCookie('csrftoken');
@@ -111,39 +152,4 @@ function alterButton(postId, isLiked) {
   }
 
   
-}
-
-
-function createPostDiv(post) {
-    const postDiv = document.createElement('div');
-    postDiv.classList.add('post-container');
-    postDiv.innerHTML = `
-      <div class="post">
-        <a href="/users/${post.owner}"><p> ${post.owner}</p></a>
-        <p> ${post.content}</p>
-        <p> ${post.created}</p>
-        <p id="likes-${post.id}"> Likes: ${post.number_of_likes}</p>
-      </div>
-    `
-    if (user_authenticated === 'true') {
-      const likeButton = document.createElement('button');
-      likeButton.id = `like-button-${post.id}`
-      likeButton.textContent = post.is_liked ? 'Dislike': 'Like';
-      likeButton.classList.add('btn')
-      likeButton.classList.add(`btn-${post.is_liked ? "danger": 'success'}`);
-      likeButton.onclick = () => addOrRemoveLike(post.id);
-      postDiv.querySelector('.post').appendChild(likeButton);
-    }
-    return postDiv
-  }
-
-function showAllPosts() {
-  const postsContainer = document.getElementById('all_posts')
-  getAllPosts()
-  .then(posts => {
-    posts.forEach(post => {
-      const postDiv = createPostDiv(post);
-      postsContainer.appendChild(postDiv);
-    });
-  });
 }
