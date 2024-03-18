@@ -50,7 +50,7 @@ function getFormInfo() {
 function sendDataToServerAndProcessResponse() {
   const content = getFormInfo()
   const csrftoken = getCookie('csrftoken');
-  return fetch('/posts/create', {
+  return fetch('/post/create', {
     method: 'POST',
     headers: {
       'X-CSRFToken': csrftoken,
