@@ -4,7 +4,9 @@ from django.utils import timezone
 
 
 class User(AbstractUser):
-    pass
+    def is_following_user(self, username):
+        return Follower.objects.filter(user=self, follower=User.objects.get(username=username)).exists()
+                                           
 
 class Post(models.Model):
     owner = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -14,10 +16,7 @@ class Post(models.Model):
 
     def __str__(self) -> str:
         return f'Post by {self.owner} created at {self.created.strftime("%H:%M:%S %d.%m.%Y")}'
-    
-    def get_number_of_followers(self):
-        number_of_followers = Follower.get_number_of_followers(self)
-        return number_of_followers
+
     
     def serialize(self, current_user=None):
         likes = Like.get_number_of_likes(self)

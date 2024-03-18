@@ -25,27 +25,36 @@
     text-align: center;
 }
 
-.profile-username {
+#profile-username {
     color: #007bff;
     font-size: 2rem;
     margin-bottom: 1rem;
 }
 
-.followers {
+#followers {
     font-size: 1.25rem;
 }
 
 #follow-button {
-    background-color: #007bff;
-    color: #fff;
     border: none;
     padding: 0.5rem 1rem;
     font-size: 1rem;
     border-radius: 0.25rem;
     cursor: pointer;
     margin-top: 1rem;
+    background-color: #007bff; 
+    color: #fff;
 }
 
 #follow-button:hover {
-    background-color: #0056b3;
+    background-color: #0056b3; 
+}
+
+#follow-button.following {
+    background-color: red;
+    color: #fff;
+}
+
+#follow-button:hover.following {
+    background-color: darkred;
 }

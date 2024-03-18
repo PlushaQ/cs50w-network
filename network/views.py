@@ -142,10 +142,10 @@ def follow_unfollow(request, username):
         else:
             message = 'Followed'
             is_following = True
-        number_of_followers = user_to_follow.get_number_of_followers()
+        number_of_followers = user_to_follow.followers.count()
         context = {
             'message': message,
-            'number_of_likes': number_of_followers,
+            'number_of_followers': number_of_followers,
             'is_following': is_following,
             }
         return JsonResponse(context, status=200)

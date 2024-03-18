@@ -11,4 +11,5 @@ urlpatterns = [
     path("posts/<str:criteria>", views.get_serialized_posts, name='posts'),
     path("like/<int:post_id>", views.add_or_remove_like, name='like'),
     path("users/<str:username>", views.profile_page, name="profile-page"),
+    path('users/follow/<str:username>', views.follow_unfollow, name='follow-unfollow'),
 ]

@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', function() {
 const user_authenticated = document.getElementById('global-data').getAttribute('data-user-authenticated');
 
 
-function getCookie(name) {
+export function getCookie(name) {
   const cookies = document.cookie.split(';');
   for (let i = 0; i < cookies.length; i++) {
     const cookie = cookies[i].trim();
