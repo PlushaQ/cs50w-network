@@ -2,6 +2,7 @@
 {% load static %} 
 
 {% block body %}
+<div class="content">
 {% if user.is_authenticated %}
 <div class="post-container">
     <form method="POST" id="new-post-form">
@@ -20,15 +21,15 @@
 </div> 
 {% endif %}
 
-<div id="all_posts">
+<div id="posts-container">
 
 </div>
-
+</div>
 {% endblock %}
 
 <!-- Scripts --> 
 {% block scripts %}
-<div id="global-data" data-user-authenticated="{{ user.is_authenticated|lower }}"></div>
+
 <script src="https://unpkg.com/react@17/umd/react.production.min.js"></script>
 <script src="https://unpkg.com/react-dom@17/umd/react-dom.production.min.js"></script>
 <script type="module" src="{% static 'network/index.js' %}"></script>

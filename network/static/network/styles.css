@@ -1,8 +1,51 @@
+.content {
+    display: flex;
+    flex-direction: column;
+}
+
 .post-container {
-    width: 60vw;
+    width: 90vw;
     margin: 10px;
     padding: 30px;
     border: 1px;
     border-radius: 20px;
     background-color: paleturquoise;
+}
+
+
+.profile-container {
+    width: 90vw;
+    margin-top: 5rem;
+}
+  
+.profile-card {
+    padding: 1.5rem;
+    background-color: #f8f9fa;
+    border-radius: 0.5rem;
+    text-align: center;
+}
+
+.profile-username {
+    color: #007bff;
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
+
+.followers {
+    font-size: 1.25rem;
+}
+
+#follow-button {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    border-radius: 0.25rem;
+    cursor: pointer;
+    margin-top: 1rem;
+}
+
+#follow-button:hover {
+    background-color: #0056b3;
 }

@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function() {  
   const textarea = document.getElementById('new-post-textarea');
   const form = document.getElementById('new-post-form');
 
@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', function() {
     textarea.addEventListener('input', () => countChars());
     form.addEventListener('submit', createNewPost);
   }
-  
+
   showPosts('all')
 });
 
@@ -50,7 +50,6 @@ function getFormInfo() {
 function sendDataToServerAndProcessResponse() {
   const content = getFormInfo()
   const csrftoken = getCookie('csrftoken');
-
   return fetch('/posts/create', {
     method: 'POST',
     headers: {
@@ -103,7 +102,7 @@ function createPostDiv(post) {
   }
 
 export function showPosts(criteria) {
-  const postsContainer = document.getElementById('all_posts')
+  const postsContainer = document.getElementById('posts-container')
   getPosts(criteria)
   .then(posts => {
     posts.forEach(post => {

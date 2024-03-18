@@ -34,7 +34,8 @@ def get_posts_by_criteria(user, criteria):
         posts = Post.objects.filter(owner=user).order_by('-created')
     elif criteria == 'followers':
         user_followers = user.followers.all() 
-        posts = Post.objects.filter(Q(owner__in=user_followers) | Q(owner=user)).order_by('-created')
+        follower_users = [follower.user for follower in user_followers]
+        posts = Post.objects.filter(Q(owner__in=follower_users) | Q(owner=user)).order_by('-created')
     else:
         posts = Post.objects.none()
     return posts

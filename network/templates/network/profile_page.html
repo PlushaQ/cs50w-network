@@ -5,20 +5,21 @@
 
 
 {% if user.is_authenticated and user.id != user_profile.id %}
-<button id="follow-button"></button>
+
 {% endif %}
 
 <div class="profile-container">
-    
-    <div class="profile-header"> 
-        <h2> {{ user_profile.username }}</h2>
-    </div>
-    <div class="user-info">
-        <p> Followers: {{ user_profile.followers.count }}</p>
+    <div class="profile-card">
+      <h1 class="profile-username">{{ user_profile.username }}</h1>
+      <p class="followers">
+        Followers: {{ user_profile.followers.count }}
+      </p>
+      <button id="follow-button">Follow</button>
     </div>
 </div>
 
-<div class="posts-container">
+
+<div id="posts-container">
 
 </div>
 {% endblock %}
@@ -28,6 +29,6 @@
 {% block scripts %}
 <script src="https://unpkg.com/react@17/umd/react.production.min.js"></script>
 <script src="https://unpkg.com/react-dom@17/umd/react-dom.production.min.js"></script>
-<script src="{% static 'network/index.js' %}"></script>
+<script type="module" src="{% static 'network/profile.js' %}"></script>
 
 {% endblock %}
