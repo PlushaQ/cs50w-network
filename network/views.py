@@ -9,7 +9,7 @@ from django.contrib.auth.decorators import login_required
 
 import json
 
-from .models import User, Post, Like
+from .models import User, Post, Like, Follower
 
 @login_required
 def create_new_post(request):
@@ -129,3 +129,26 @@ def add_or_remove_like(request, post_id):
 def profile_page(request, username):
     user = User.objects.get(username=username)
     return render(request, "network/profile_page.html", {'user_profile': user })
+
+
+def follow_unfollow(request, username):
+    if request.user.is_authenticated and request.method == "POST":
+        user_to_follow = User.objects.get(username=username)
+        follower, created = Follower.objects.get_or_create(follower=request.user, user=user_to_follow)
+        if not created:
+            follower.delete()
+            message = 'unfollowed'
+            is_following = False
+        else:
+            message = 'Followed'
+            is_following = True
+        number_of_followers = user_to_follow.get_number_of_followers()
+        context = {
+            'message': message,
+            'number_of_likes': number_of_followers,
+            'is_following': is_following,
+            }
+        return JsonResponse(context, status=200)
+
+    else:
+        return redirect('login')
