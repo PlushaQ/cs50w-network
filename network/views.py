@@ -5,6 +5,7 @@ from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator, EmptyPage
 
 import json
 
@@ -22,8 +23,9 @@ def create_new_post(request):
         return JsonResponse({'error': 'You need to provide content of the post'}, status=400)
     post = Post(owner=owner, content=content)
     post.save()
-
-    return JsonResponse({'response': 'response OK'}, status=200)
+    context = {'response': 'Post created',
+               'post': post.serialize()}
+    return JsonResponse(context, status=200)
 
 
 def get_posts_by_criteria(user, criteria):
@@ -40,11 +42,32 @@ def get_posts_by_criteria(user, criteria):
     return posts
 
 
+def get_paginator(posts):
+    paginator = Paginator(posts, 10)
+    return paginator
+
+
+def get_paginated_posts(paginator, page_number):
+    return paginator.page(page_number)
+    
+
 def get_serialized_posts(request, criteria):
     posts = get_posts_by_criteria(request.user, criteria)
+    paginator = get_paginator(posts)
+    current_page = request.GET.get('page')
+    paginated_posts = get_paginated_posts(paginator, current_page)
 
-    serialized_posts = [post.serialize(current_user=request.user) for post in posts]
-    return JsonResponse(serialized_posts, safe=False)
+    serialized_posts = [post.serialize(current_user=request.user) for post in paginated_posts]
+    return JsonResponse({
+        'posts': serialized_posts,
+        'paginator_data': {
+            'number_of_pages': paginator.num_pages,
+            'current_page': current_page,
+            'has_next': paginated_posts.has_next(),
+            'has_previous': paginated_posts.has_previous(),
+            'next_page_number': paginated_posts.next_page_number() if paginated_posts.has_next() else None,
+            'previous_page_number': paginated_posts.previous_page_number() if paginated_posts.has_previous() else None,}
+    }, safe=False)
 
 
 def index(request):

@@ -62,23 +62,30 @@ function sendDataToServerAndProcessResponse() {
       'X-CSRFToken': csrftoken,
     },
     body: JSON.stringify(content)
-  }).then(response => response.json())
-  .then(result => {
-      console.log(result);
   });
 }
 
 function createNewPost(event) {
   event.preventDefault()
   sendDataToServerAndProcessResponse()
+  .then(response => response.json())
+  .then(data => {
+    console.log(data)
+    const post = data.post
+    showNewPost(post)
+  })
   clearNewPostForm()
   countChars() // resets counter
 }
 
+
 // Showing the posts
 
+
 function getPosts(criteria) {
-  return fetch(`/posts/${criteria}`).then(response => response.json())
+  const urlParams = new URLSearchParams(window.location.search);
+  const page_number = urlParams.get('page') || 1; 
+  return fetch(`/posts/${criteria}?page=${page_number}`).then(response => response.json())
   .then(response => {
     return response }
     )
@@ -107,16 +114,108 @@ function createPostDiv(post) {
     return postDiv
   }
 
+function showNewPost(post) {
+  const postsContainer = document.getElementById('posts-container');
+  const postDiv = createPostDiv(post);
+  postsContainer.prepend(postDiv);
+}
+
+
+function generatePaginator(paginator_data) {
+  const paginatorContainer = document.createElement('div');
+  paginatorContainer.classList.add('paginator');
+
+  const createPageLink = (num) => {
+    const pageLink = document.createElement('a');
+    pageLink.href = `?page=${num}`;
+    pageLink.textContent = num;
+    paginatorContainer.appendChild(pageLink);
+  };
+
+  if (paginator_data.has_previous) {
+    const previousLink = document.createElement('a');
+    previousLink.href = `?page=${paginator_data.previous_page_number}`;
+    previousLink.textContent = 'Previous';
+    paginatorContainer.appendChild(previousLink);
+  }
+
+  if (paginator_data.number_of_pages < 5) {
+    for (let num = 1; num <= paginator_data.number_of_pages; num++) { 
+      createPageLink(num)
+    }
+  }
+ else {
+  const currentPage = paginator_data.current_page;
+  const totalPages = paginator_data.number_of_pages;
+  
+
+  
+
+  // First page
+  createPageLink(1);
+
+  // Ellipsis between first page and previous page if needed
+  if (currentPage > 3) {
+    const ellipsis = document.createElement('span');
+    ellipsis.textContent = '...';
+    paginatorContainer.appendChild(ellipsis);
+  }
+
+   // Previous page link
+   if (currentPage > 2) {
+    createPageLink(parseInt(currentPage) - 1);
+  }
+  
+
+  // Current page
+  if (currentPage != 1 & currentPage != totalPages) {
+    createPageLink(currentPage);
+  }
+
+  // Next page link
+  if (currentPage < totalPages & totalPages - 1 != currentPage) {
+    createPageLink(parseInt(currentPage) + 1);
+  }
+  
+
+  // Ellipsis between next page and last page if needed
+  if (currentPage < totalPages - 2) {
+    const ellipsis = document.createElement('span');
+    ellipsis.textContent = '...';
+    paginatorContainer.appendChild(ellipsis);
+  }
+
+  // Last page
+  createPageLink(totalPages);
+}
+
+  if (paginator_data.has_next) {
+    const nextLink = document.createElement('a');
+    nextLink.href = `?page=${paginator_data.next_page_number}`;
+    nextLink.textContent = 'Next';
+    paginatorContainer.appendChild(nextLink);
+  }
+
+  return paginatorContainer;
+}
+
+
 export function showPosts(criteria) {
-  const postsContainer = document.getElementById('posts-container')
+  const postsContainer = document.getElementById('posts-container');
   getPosts(criteria)
-  .then(posts => {
+  .then(data => {
+    let posts = data.posts;
     posts.forEach(post => {
       const postDiv = createPostDiv(post);
       postsContainer.appendChild(postDiv);
     });
+    let paginator = generatePaginator(data.paginator_data)
+    postsContainer.appendChild(paginator)
+
   });
 }
+
+
 
 
 // Likes functions
