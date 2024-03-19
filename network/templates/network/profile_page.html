@@ -12,13 +12,16 @@
     <div class="profile-card">
       <h1 id="profile-username" class="profile-username">{{ user_profile.username }}</h1>
       <p id="followers">
-        Followers: {{ user_profile.followers.count }}
+        Followers: {{ user_profile.get_followers_count }}
       </p>
-      {% if user|is_logged_in_user_following_user:user_profile %}
-      <button id="follow-button" class="following">Unfollow</button>
-      {% else %}
-      <button id="follow-button" class="not-following">Follow</button>
+      {% if user != user_profile %}
+        {% if user|is_logged_in_user_following_user:user_profile %}
+        <button id="follow-button" class="following">Unfollow</button>
+        {% else %}
+        <button id="follow-button" class="not-following">Follow</button>
+        {% endif %}
       {% endif %}
+      <p class="error-message"></p>
     </div>
 </div>
 

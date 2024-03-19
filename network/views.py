@@ -4,7 +4,6 @@ from django.db.models import Q
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse
-from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
 
 import json
@@ -32,7 +31,7 @@ def get_posts_by_criteria(user, criteria):
         posts = Post.objects.all().order_by('-created')
     elif criteria == 'user':
         posts = Post.objects.filter(owner=user).order_by('-created')
-    elif criteria == 'followers':
+    elif criteria == 'following':
         user_followers = user.followers.all() 
         follower_users = [follower.user for follower in user_followers]
         posts = Post.objects.filter(Q(owner__in=follower_users) | Q(owner=user)).order_by('-created')
@@ -49,7 +48,11 @@ def get_serialized_posts(request, criteria):
 
 
 def index(request):
-    return render(request, "network/index.html")
+    return render(request, "network/index.html", {'following_page': False})
+
+def following(request):
+    return render(request, "network/index.html", {'following_page': True})
+
 
 
 def login_view(request):
@@ -134,6 +137,9 @@ def profile_page(request, username):
 def follow_unfollow(request, username):
     if request.user.is_authenticated and request.method == "POST":
         user_to_follow = User.objects.get(username=username)
+        if request.user == user_to_follow:
+            return JsonResponse({'message': "You can't follow yourself"})
+        
         follower, created = Follower.objects.get_or_create(follower=request.user, user=user_to_follow)
         if not created:
             follower.delete()
@@ -142,7 +148,7 @@ def follow_unfollow(request, username):
         else:
             message = 'Followed'
             is_following = True
-        number_of_followers = user_to_follow.followers.count()
+        number_of_followers = user_to_follow.get_followers_count()
         context = {
             'message': message,
             'number_of_followers': number_of_followers,

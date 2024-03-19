@@ -2,7 +2,9 @@ import { showPosts, getCookie } from "./index.js";
 
 document.addEventListener('DOMContentLoaded', function() {
   const username = document.getElementById('profile-username').innerHTML;
-  document.getElementById('follow-button').addEventListener('click', () => processFollowUnfollow(username));
+  const follow_button = document.getElementById('follow-button')
+  if (follow_button) {
+    follow_button.addEventListener('click', () => processFollowUnfollow(username));}
   showPosts('followers');
   });
 
@@ -35,7 +37,12 @@ function processFollowUnfollow(username) {
     response => response.json()
   ).then(response => {
     console.log(response);
-    changeButtonStyle(response.is_following);
-    changeNumberOfFollowers(response.number_of_followers);
+    if (response.message !== "You can't follow yourself") {
+      changeButtonStyle(response.is_following);
+      changeNumberOfFollowers(response.number_of_followers);
+    }
+    else {
+      alert(response.message)
+    }
   })
   }

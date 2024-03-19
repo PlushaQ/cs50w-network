@@ -7,8 +7,14 @@ document.addEventListener('DOMContentLoaded', function() {
     textarea.addEventListener('input', () => countChars());
     form.addEventListener('submit', createNewPost);
   }
-
-  showPosts('all')
+  
+  const followingPage = document.getElementById('global-data').getAttribute('data-following-page').toLowerCase();
+ 
+  if (followingPage === 'true') {
+    showPosts('following');
+  } else {
+    showPosts('all');
+  }
 });
 
 const user_authenticated = document.getElementById('global-data').getAttribute('data-user-authenticated');

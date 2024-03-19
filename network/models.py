@@ -5,7 +5,11 @@ from django.utils import timezone
 
 class User(AbstractUser):
     def is_following_user(self, username):
-        return Follower.objects.filter(user=self, follower=User.objects.get(username=username)).exists()
+        target = User.objects.get(username=username)
+        return Follower.objects.filter(user=target, follower=self).exists()
+
+    def get_followers_count(self):
+        return Follower.objects.filter(user=self).count()
                                            
 
 class Post(models.Model):
