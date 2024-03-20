@@ -73,9 +73,9 @@ def get_serialized_posts(request, criteria):
 def index(request):
     return render(request, "network/index.html", {'following_page': False})
 
+
 def following(request):
     return render(request, "network/index.html", {'following_page': True})
-
 
 
 def login_view(request):

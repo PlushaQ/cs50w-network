@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', function() {
   const follow_button = document.getElementById('follow-button')
   if (follow_button) {
     follow_button.addEventListener('click', () => processFollowUnfollow(username));}
-  showPosts('followers');
+  showPosts('user');
   });
 
 

@@ -1,4 +1,7 @@
-document.addEventListener('DOMContentLoaded', function() {  
+const isMainEntryPoint = window.isMainEntryPoint;
+
+if (isMainEntryPoint) {
+  document.addEventListener('DOMContentLoaded', function() {  
   const textarea = document.getElementById('new-post-textarea');
   const form = document.getElementById('new-post-form');
 
@@ -9,13 +12,13 @@ document.addEventListener('DOMContentLoaded', function() {
   }
   
   const followingPage = document.getElementById('global-data').getAttribute('data-following-page').toLowerCase();
- 
   if (followingPage === 'true') {
     showPosts('following');
   } else {
     showPosts('all');
   }
 });
+};
 
 const user_authenticated = document.getElementById('global-data').getAttribute('data-user-authenticated');
 
@@ -122,21 +125,36 @@ function showNewPost(post) {
 
 
 function generatePaginator(paginator_data) {
-  const paginatorContainer = document.createElement('div');
+  const paginatorContainer = document.createElement('nav');
   paginatorContainer.classList.add('paginator');
+  const paginatorList = document.createElement('ul');
+  paginatorList.classList.add('pagination')
+  paginatorList.classList.add('justify-content-center')
+  paginatorContainer.appendChild(paginatorList);
 
-  const createPageLink = (num) => {
+  const createPageLink = (num, textContent="") => {
+    const listItem = document.createElement('li');
+    listItem.classList.add('page-item')
+
     const pageLink = document.createElement('a');
     pageLink.href = `?page=${num}`;
-    pageLink.textContent = num;
-    paginatorContainer.appendChild(pageLink);
+    pageLink.textContent = textContent || num;
+    pageLink.classList.add('page-link');
+    
+    listItem.appendChild(pageLink);
+    paginatorList.appendChild(listItem);
   };
 
+  const createEllipsis = () => {
+    const listItem = document.createElement('li');
+    listItem.classList.add('page-item');
+    listItem.classList.add('page-link');
+    listItem.textContent = '...'
+    paginatorList.appendChild(listItem);
+  };
+  // Create previous button
   if (paginator_data.has_previous) {
-    const previousLink = document.createElement('a');
-    previousLink.href = `?page=${paginator_data.previous_page_number}`;
-    previousLink.textContent = 'Previous';
-    paginatorContainer.appendChild(previousLink);
+    createPageLink(paginator_data.previous_page_number, "Previous")
   }
 
   if (paginator_data.number_of_pages < 5) {
@@ -144,21 +162,16 @@ function generatePaginator(paginator_data) {
       createPageLink(num)
     }
   }
- else {
+  else {
   const currentPage = paginator_data.current_page;
   const totalPages = paginator_data.number_of_pages;
   
-
-  
-
   // First page
   createPageLink(1);
 
   // Ellipsis between first page and previous page if needed
   if (currentPage > 3) {
-    const ellipsis = document.createElement('span');
-    ellipsis.textContent = '...';
-    paginatorContainer.appendChild(ellipsis);
+    createEllipsis()
   }
 
    // Previous page link
@@ -180,9 +193,7 @@ function generatePaginator(paginator_data) {
 
   // Ellipsis between next page and last page if needed
   if (currentPage < totalPages - 2) {
-    const ellipsis = document.createElement('span');
-    ellipsis.textContent = '...';
-    paginatorContainer.appendChild(ellipsis);
+    createEllipsis()
   }
 
   // Last page
@@ -190,10 +201,7 @@ function generatePaginator(paginator_data) {
 }
 
   if (paginator_data.has_next) {
-    const nextLink = document.createElement('a');
-    nextLink.href = `?page=${paginator_data.next_page_number}`;
-    nextLink.textContent = 'Next';
-    paginatorContainer.appendChild(nextLink);
+    createPageLink(paginator_data.next_page_number, "Next")
   }
 
   return paginatorContainer;
@@ -209,13 +217,12 @@ export function showPosts(criteria) {
       const postDiv = createPostDiv(post);
       postsContainer.appendChild(postDiv);
     });
+
     let paginator = generatePaginator(data.paginator_data)
     postsContainer.appendChild(paginator)
 
   });
 }
-
-
 
 
 // Likes functions
@@ -231,7 +238,6 @@ function addOrRemoveLike(postId) {
   })
   .then(response => response.json()
   .then(data => {
-    console.log(data)
     alterLikesNumber(postId, data.number_of_likes);
     alterButton(postId, data.is_liked);
   }  
@@ -247,7 +253,6 @@ function alterLikesNumber(postId, numberOfLikes) {
 function alterButton(postId, isLiked) {
   const likesButton = document.getElementById(`like-button-${postId}`);
   likesButton.textContent = isLiked ? 'Dislike': 'Like';
-  console.log(typeof(isLiked))
   if (isLiked) { 
     likesButton.classList.replace('btn-success', 'btn-danger')
   }
