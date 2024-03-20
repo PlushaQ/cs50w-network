@@ -36,11 +36,10 @@ def get_posts_by_criteria(user, criteria):
     elif criteria == 'following':
         user_followers = user.followers.all() 
         follower_users = [follower.user for follower in user_followers]
-        posts = Post.objects.filter(Q(owner__in=follower_users) | Q(owner=user)).order_by('-created')
+        posts = Post.objects.filter(Q(owner__in=follower_users)).order_by('-created')
     else:
         posts = Post.objects.none()
     return posts
-
 
 def get_paginator(posts):
     paginator = Paginator(posts, 10)
@@ -51,10 +50,20 @@ def get_paginated_posts(paginator, page_number):
     return paginator.page(page_number)
     
 
-def get_serialized_posts(request, criteria):
-    posts = get_posts_by_criteria(request.user, criteria)
-    paginator = get_paginator(posts)
+def get_page_and_user_from_request(request):
     current_page = request.GET.get('page')
+    username = request.GET.get('username')
+    user = None
+    if username:
+        user = User.objects.get(username=username)
+    return current_page, user
+
+
+def get_serialized_posts(request, criteria):
+    current_page, user = get_page_and_user_from_request(request)
+
+    posts = get_posts_by_criteria(user, criteria)
+    paginator = get_paginator(posts)
     paginated_posts = get_paginated_posts(paginator, current_page)
 
     serialized_posts = [post.serialize(current_user=request.user) for post in paginated_posts]
@@ -68,6 +77,8 @@ def get_serialized_posts(request, criteria):
             'next_page_number': paginated_posts.next_page_number() if paginated_posts.has_next() else None,
             'previous_page_number': paginated_posts.previous_page_number() if paginated_posts.has_previous() else None,}
     }, safe=False)
+
+
 
 
 def index(request):

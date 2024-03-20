@@ -83,12 +83,26 @@ function createNewPost(event) {
 
 
 // Showing the posts
+function getUsername() {
+  let username = document.getElementById('profile-username')
+  if (username) {
+    return username.innerHTML;
+  }
 
+}
 
 function getPosts(criteria) {
   const urlParams = new URLSearchParams(window.location.search);
+  const username = getUsername()
   const page_number = urlParams.get('page') || 1; 
-  return fetch(`/posts/${criteria}?page=${page_number}`).then(response => response.json())
+
+  let url = `/posts/${criteria}?page=${page_number}`;
+
+  if (username) {
+    url += `&username=${username}`;
+  }
+  return fetch(url)
+  .then(response => response.json())
   .then(response => {
     return response }
     )

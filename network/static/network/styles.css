@@ -1,26 +1,31 @@
 .content {
     display: flex;
     flex-direction: column;
+    align-items: center;
+}
+
+.paginator {
+    margin-top: 3rem;
 }
 
 .post-container {
     width: 90vw;
-    margin: 10px;
-    padding: 30px;
-    border: 1px;
-    border-radius: 20px;
-    background-color: paleturquoise;
+    margin-top: 2rem;
+    padding: 1.5rem;
+    background-color: #e0e3e6;
+    border-radius: 0.5rem;
+    text-align: left;
 }
 
 
 .profile-container {
-    width: 90vw;
+    width: 100vw;
     margin-top: 5rem;
 }
   
 .profile-card {
     padding: 1.5rem;
-    background-color: #f8f9fa;
+    background-color: #e0e3e6;
     border-radius: 0.5rem;
     text-align: center;
 }

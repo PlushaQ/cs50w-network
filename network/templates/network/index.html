@@ -3,7 +3,7 @@
 
 {% block body %}
 <div class="content">
-{% if user.is_authenticated %}
+{% if user.is_authenticated and not following_page %}
 <div class="post-container">
     <form method="POST" id="new-post-form">
         {% csrf_token %}
