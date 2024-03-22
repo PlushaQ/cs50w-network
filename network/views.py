@@ -41,6 +41,7 @@ def get_posts_by_criteria(user, criteria):
         posts = Post.objects.none()
     return posts
 
+
 def get_paginator(posts):
     paginator = Paginator(posts, 10)
     return paginator
@@ -77,8 +78,6 @@ def get_serialized_posts(request, criteria):
             'next_page_number': paginated_posts.next_page_number() if paginated_posts.has_next() else None,
             'previous_page_number': paginated_posts.previous_page_number() if paginated_posts.has_previous() else None,}
     }, safe=False)
-
-
 
 
 def index(request):
@@ -163,6 +162,7 @@ def add_or_remove_like(request, post_id):
     else:
         return redirect('login')
 
+
 def profile_page(request, username):
     user = User.objects.get(username=username)
     return render(request, "network/profile_page.html", {'user_profile': user })
@@ -192,3 +192,21 @@ def follow_unfollow(request, username):
 
     else:
         return redirect('login')
+    
+
+def edit_post(request, post_id):
+    if request.method != "PUT":
+        return JsonResponse({'message': 'Wrong method'}, status=400)
+    
+    post = Post.objects.get(pk=post_id)
+
+    if request.user != post.owner:
+        return JsonResponse({'error': 'You are not the owner of the post'}, status=403)
+    
+    data = json.loads(request.body)
+    print(data['content'])
+    post.content = data['content']
+    post.save()
+
+    return JsonResponse({'message': 'ok', "post": post.serialize()}, status=200)
+    

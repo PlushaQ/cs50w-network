@@ -21,7 +21,7 @@ if (isMainEntryPoint) {
 };
 
 const user_authenticated = document.getElementById('global-data').getAttribute('data-user-authenticated');
-
+const userUsername = document.getElementById('global-data').getAttribute('data-user-username');
 
 export function getCookie(name) {
   const cookies = document.cookie.split(';');
@@ -56,7 +56,7 @@ function getFormInfo() {
   }
 }
 
-function sendDataToServerAndProcessResponse() {
+function sendCreatePostRequestAndProcessResponse() {
   const content = getFormInfo()
   const csrftoken = getCookie('csrftoken');
   return fetch('/post/create', {
@@ -70,7 +70,7 @@ function sendDataToServerAndProcessResponse() {
 
 function createNewPost(event) {
   event.preventDefault()
-  sendDataToServerAndProcessResponse()
+  sendCreatePostRequestAndProcessResponse()
   .then(response => response.json())
   .then(data => {
     console.log(data)
@@ -111,24 +111,44 @@ function getPosts(criteria) {
 function createPostDiv(post) {
     const postDiv = document.createElement('div');
     postDiv.classList.add('post-container');
+    postDiv.id = `post-${post.id}`
     postDiv.innerHTML = `
       <div class="post">
-        <a href="/users/${post.owner}"><p> ${post.owner}</p></a>
+        <a href="/users/${post.owner}" class="creator-username"><strong>${post.owner}</strong></a>
+        <div id="post${post.id}-content">
         <p> ${post.content}</p>
-        <p> ${post.created}</p>
+        </div>
         <p id="likes-${post.id}"> Likes: ${post.number_of_likes}</p>
+        <p class="created-time"> ${post.created}</p>
       </div>
     `
     if (user_authenticated === 'true') {
-      const likeButton = document.createElement('button');
-      likeButton.id = `like-button-${post.id}`
-      likeButton.textContent = post.is_liked ? 'Dislike': 'Like';
-      likeButton.classList.add('btn')
-      likeButton.classList.add(`btn-${post.is_liked ? "danger": 'success'}`);
-      likeButton.onclick = () => addOrRemoveLike(post.id);
-      postDiv.querySelector('.post').appendChild(likeButton);
+      createLikeButton();
+      if (userUsername == post.owner) {
+        createEditButton();
+      }
     }
     return postDiv
+
+  function createEditButton(){
+    const editButton = document.createElement('button');
+    const editSVG = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3L21 10 10 21 3 21 3 14zM21 10L14 3"></path></svg>'
+    editButton.id = `edit-button-${post.id}`;
+    editButton.classList = 'btn btn-light edit-button'
+    editButton.innerHTML = editSVG
+    editButton.onclick = () => generateEditPostWindow(post.id)
+    postDiv.prepend(editButton);
+  }
+
+  function createLikeButton() {
+    const likeButton = document.createElement('button');
+    likeButton.id = `like-button-${post.id}`;
+    likeButton.textContent = post.is_liked ? 'Dislike' : 'Like';
+    likeButton.classList.add('btn');
+    likeButton.classList.add(`btn-${post.is_liked ? "danger" : 'success'}`);
+    likeButton.onclick = () => addOrRemoveLike(post.id);
+    postDiv.querySelector('.post').appendChild(likeButton);
+  }
   }
 
 function showNewPost(post) {
@@ -238,6 +258,88 @@ export function showPosts(criteria) {
   });
 }
 
+
+// Edit posts function 
+function getEditedPostContent(postId) {
+  const content = document.getElementById(`edit-post${postId}-textarea`).value;
+  return content;
+}
+
+function fetchEditData(postId) {
+  let content = getEditedPostContent(postId)
+  return fetch(`/post/edit/${postId}`, {
+    method: 'PUT',
+    headers: {
+      'X-CSRFToken': getCookie('csrftoken'),
+    },
+    body: JSON.stringify({'content': content})
+  });
+
+}
+
+function editPost(postId) {
+  fetchEditData(postId)
+    .then(response => {
+      if (response.ok) {
+        return response.json();
+      } else if (response.status === 403) {
+        throw new Error("Forbidden: You don't have permission to edit this post.");
+      } else {
+        throw new Error("Failed to fetch edit data.");
+      }
+    })
+    .then(data => {
+      regeneratePostDiv(data.post);
+    })
+    .catch(error => {
+      console.error("Error editing post:", error);
+    });
+}
+
+
+function generateEditPostWindow(postId) {
+  const contentDiv = document.getElementById(`post${postId}-content`);
+  const editButton = document.getElementById(`edit-button-${postId}`);
+  editButton.remove()
+  const val = contentDiv.innerHTML;
+
+  const pContent = getParagraphContent();
+
+  contentDiv.innerHTML = `
+  <div class="form-group">
+    <div class="form-group">
+      <textarea name="content" cols="40" rows="4" id="edit-post${postId}-textarea" class="form-control" maxlength="300" required="">${pContent}</textarea>
+    </div>
+  </div>`
+
+  createSubmitEditButton()
+
+
+  function createSubmitEditButton() {
+    const submitDiv = document.createElement('div')
+    submitDiv.classList = 'text-right'
+    const submitButton = document.createElement('button');
+    submitButton.classList = "btn btn-primary text-right"
+    submitButton.textContent = 'Edit';
+    submitButton.onclick = () => editPost(postId)
+    submitDiv.appendChild(submitButton)
+    contentDiv.appendChild(submitDiv)
+  }
+
+  function getParagraphContent() {
+    const temp = document.createElement('div');
+    temp.innerHTML = val;
+    const pContent = temp.querySelector('p').innerText;
+    return pContent;
+  }
+}
+
+function regeneratePostDiv(post) {
+  const contentDiv = document.getElementById(`post-${post.id}`);
+  const newContentDiv = createPostDiv(post);
+  contentDiv.parentNode.replaceChild(newContentDiv, contentDiv);
+
+}
 
 // Likes functions
 

@@ -9,8 +9,7 @@
         {% csrf_token %}
         <div class="form-group">
             <div class="form-group">
-                <label for="new-post-textarea">Content:</label>
-                <textarea name="content" cols="40" rows="4" id="new-post-textarea" class="form-control" maxlength="300" required=""></textarea>
+                <textarea name="content" cols="40" rows="4" id="new-post-textarea" class="form-control" maxlength="300" required="" placeholder="Tell me what you want!"></textarea>
             </div>
             <div class="form-group">
                 <button id="new-post-button" type="submit" class="btn btn-primary">Submit</button>

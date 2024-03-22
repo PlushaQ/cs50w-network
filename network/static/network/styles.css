@@ -8,7 +8,14 @@
     margin-top: 3rem;
 }
 
+#posts-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
 .post-container {
+    position: relative;
     width: 90vw;
     margin-top: 2rem;
     padding: 1.5rem;
@@ -17,6 +24,15 @@
     text-align: left;
 }
 
+a.creator-username {
+    text-decoration: none;
+    color: black;
+    
+}
+a.creator-username:hover {
+    text-decoration: underline;
+    color: blue;
+}
 
 .profile-container {
     width: 100vw;
@@ -35,6 +51,10 @@
     font-size: 2rem;
     margin-bottom: 1rem;
 }
+
+.creator-username {
+    width: 50vw;
+} 
 
 #followers {
     font-size: 1.25rem;
@@ -62,4 +82,10 @@
 
 #follow-button:hover.following {
     background-color: darkred;
+}
+
+.edit-button {
+    position: absolute;
+    top: 1rem; 
+    right: 1rem; 
 }
