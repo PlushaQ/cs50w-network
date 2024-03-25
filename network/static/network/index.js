@@ -73,7 +73,6 @@ function createNewPost(event) {
   sendCreatePostRequestAndProcessResponse()
   .then(response => response.json())
   .then(data => {
-    console.log(data)
     const post = data.post
     showNewPost(post)
   })
@@ -130,9 +129,9 @@ function createPostDiv(post) {
           <p class="created-time"> ${post.created}</p>
       </div>
     `
-
+    createLikeButton()
     if (user_authenticated === 'true') {
-      createLikeButton();
+      
       if (userUsername == post.owner) {
         createEditButton();
       }
@@ -159,8 +158,12 @@ function createPostDiv(post) {
         </svg>
     `;
     likeButton.innerHTML = heartSVG
-    likeButton.onclick = () => {
-      addOrRemoveLike(post.id);
+    if (user_authenticated === 'true') {
+      likeButton.onclick = () => {
+        addOrRemoveLike(post.id);
+    }}
+    else {
+      likeButton.style.pointerEvents = 'none';
     }
     postDiv.querySelector('.like-button-container').appendChild(likeButton);
   }
@@ -261,16 +264,34 @@ function generatePaginator(paginator_data) {
   return paginatorContainer;
 }
 
+function generateEmptyPost() {
+  const emptyPost = document.createElement('div');
+  emptyPost.classList.add('post-container');
+  emptyPost.innerHTML = `
+      <div class="post">
+        <div class="post-info">
+          <p style="text-align: center;">There's nothing to show you!</p>
+        </div>
+      </div>
+  `;
+  return emptyPost;
+}
+
 
 export function showPosts(criteria) {
   const postsContainer = document.getElementById('posts-container');
   getPosts(criteria)
   .then(data => {
     let posts = data.posts;
-    posts.forEach(post => {
-      const postDiv = createPostDiv(post);
-      postsContainer.appendChild(postDiv);
-    });
+    if (posts.length === 0){
+      const emptyPost = generateEmptyPost()
+      postsContainer.appendChild(emptyPost)
+    } else {
+      posts.forEach(post => {
+        const postDiv = createPostDiv(post);
+        postsContainer.appendChild(postDiv);
+      });
+    }
 
     let paginator = generatePaginator(data.paginator_data)
     postsContainer.appendChild(paginator)

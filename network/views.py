@@ -62,9 +62,8 @@ def get_page_and_user_from_request(request):
 
 def get_serialized_posts(request, criteria):
     current_page, user = get_page_and_user_from_request(request)
-    if not user: 
+    if criteria == 'following':
         user = User.objects.get(pk=request.user.id)
-        
     posts = get_posts_by_criteria(user, criteria)
     paginator = get_paginator(posts)
     paginated_posts = get_paginated_posts(paginator, current_page)
@@ -206,7 +205,6 @@ def edit_post(request, post_id):
         return JsonResponse({'error': 'You are not the owner of the post'}, status=403)
     
     data = json.loads(request.body)
-    print(data['content'])
     post.content = data['content']
     post.save()
 
