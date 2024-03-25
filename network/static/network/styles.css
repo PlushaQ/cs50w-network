@@ -26,18 +26,23 @@
 }
 
 .post-content {
+    margin-top: 1rem;
     margin-bottom: 1rem;
     line-height: 1.5;
 }
 
 
-.like-button {
+.like-button, .edit-button{
     background-color: transparent;
     border: none;
-    padding: 0; 
     cursor: pointer; 
     display: inline-block; 
-    margin-top: 1rem;
+}
+
+.edit-button {
+    position: absolute;
+    top: 1rem; 
+    right: 1rem; 
 }
 
 .created-time {
@@ -108,11 +113,7 @@ a.creator-username:hover {
     background-color: darkred;
 }
 
-.edit-button {
-    position: absolute;
-    top: 1rem; 
-    right: 1rem; 
-}
+
 
 @keyframes showNewPost {
     from {

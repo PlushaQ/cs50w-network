@@ -143,7 +143,7 @@ function createPostDiv(post) {
     const editButton = document.createElement('button');
     const editSVG = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3L21 10 10 21 3 21 3 14zM21 10L14 3"></path></svg>'
     editButton.id = `edit-button-${post.id}`;
-    editButton.classList = 'btn btn-light edit-button'
+    editButton.classList = 'edit-button'
     editButton.innerHTML = editSVG
     editButton.onclick = () => generateEditPostWindow(post.id)
     postDiv.prepend(editButton);
