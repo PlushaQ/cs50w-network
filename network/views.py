@@ -62,7 +62,9 @@ def get_page_and_user_from_request(request):
 
 def get_serialized_posts(request, criteria):
     current_page, user = get_page_and_user_from_request(request)
-
+    if not user: 
+        user = User.objects.get(pk=request.user.id)
+        
     posts = get_posts_by_criteria(user, criteria)
     paginator = get_paginator(posts)
     paginated_posts = get_paginated_posts(paginator, current_page)
