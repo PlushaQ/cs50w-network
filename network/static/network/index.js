@@ -92,9 +92,8 @@ function getUsername() {
 }
 
 function getPosts(criteria) {
-  const urlParams = new URLSearchParams(window.location.search);
+  const page_number = getPageNumber(); 
   const username = getUsername()
-  const page_number = urlParams.get('page') || 1; 
 
   let url = `/posts/${criteria}?page=${page_number}`;
 
@@ -106,6 +105,13 @@ function getPosts(criteria) {
   .then(response => {
     return response }
     )
+}
+
+function getPageNumber() {
+  const urlParams = new URLSearchParams(window.location.search);
+  let page_number = urlParams.get('page') || 1;
+  page_number = parseInt(page_number)
+  return page_number;
 }
 
 function createPostDiv(post) {
@@ -122,6 +128,7 @@ function createPostDiv(post) {
         <p class="created-time"> ${post.created}</p>
       </div>
     `
+
     if (user_authenticated === 'true') {
       createLikeButton();
       if (userUsername == post.owner) {
@@ -149,12 +156,16 @@ function createPostDiv(post) {
     likeButton.onclick = () => addOrRemoveLike(post.id);
     postDiv.querySelector('.post').appendChild(likeButton);
   }
-  }
+}
 
 function showNewPost(post) {
-  const postsContainer = document.getElementById('posts-container');
-  const postDiv = createPostDiv(post);
-  postsContainer.prepend(postDiv);
+  const pageNum = getPageNumber()
+  if (pageNum === 1) {
+    const postsContainer = document.getElementById('posts-container');
+    const postDiv = createPostDiv(post);
+    postsContainer.prepend(postDiv);
+    postDiv.style.animation = 'showNewPost 0.5s linear 1'
+  }
 }
 
 
@@ -186,6 +197,7 @@ function generatePaginator(paginator_data) {
     listItem.textContent = '...'
     paginatorList.appendChild(listItem);
   };
+  
   // Create previous button
   if (paginator_data.has_previous) {
     createPageLink(paginator_data.previous_page_number, "Previous")
