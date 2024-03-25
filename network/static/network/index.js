@@ -122,10 +122,12 @@ function createPostDiv(post) {
       <div class="post">
         <a href="/users/${post.owner}" class="creator-username"><strong>${post.owner}</strong></a>
         <div id="post${post.id}-content">
-        <p> ${post.content}</p>
+        <p class=post-content> ${post.content}</p>
         </div>
-        <p id="likes-${post.id}"> Likes: ${post.number_of_likes}</p>
-        <p class="created-time"> ${post.created}</p>
+        <p><span class="like-button-container">
+          </span>
+          <span id="likes-${post.id}">${post.number_of_likes}</span> </p>
+          <p class="created-time"> ${post.created}</p>
       </div>
     `
 
@@ -150,11 +152,17 @@ function createPostDiv(post) {
   function createLikeButton() {
     const likeButton = document.createElement('button');
     likeButton.id = `like-button-${post.id}`;
-    likeButton.textContent = post.is_liked ? 'Dislike' : 'Like';
-    likeButton.classList.add('btn');
-    likeButton.classList.add(`btn-${post.is_liked ? "danger" : 'success'}`);
-    likeButton.onclick = () => addOrRemoveLike(post.id);
-    postDiv.querySelector('.post').appendChild(likeButton);
+    likeButton.classList.add('like-button')
+    const heartSVG = `
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+            <path class="heart-path" fill="${post.is_liked ? 'red' : 'white'}" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+        </svg>
+    `;
+    likeButton.innerHTML = heartSVG
+    likeButton.onclick = () => {
+      addOrRemoveLike(post.id);
+    }
+    postDiv.querySelector('.like-button-container').appendChild(likeButton);
   }
 }
 
@@ -375,18 +383,12 @@ function addOrRemoveLike(postId) {
 
 function alterLikesNumber(postId, numberOfLikes) {
   const likesElement = document.getElementById(`likes-${postId}`);
-  likesElement.innerHTML = `Likes: ${numberOfLikes}`;
+  likesElement.innerHTML = `${numberOfLikes}`;
 }
 
 function alterButton(postId, isLiked) {
-  const likesButton = document.getElementById(`like-button-${postId}`);
-  likesButton.textContent = isLiked ? 'Dislike': 'Like';
-  if (isLiked) { 
-    likesButton.classList.replace('btn-success', 'btn-danger')
-  }
-  else {
-    likesButton.classList.replace('btn-danger', 'btn-success')
-  }
+  const likeButton = document.getElementById(`like-button-${postId}`);
+  const heartPath = likeButton.querySelector('.heart-path');
+  heartPath.setAttribute('fill', isLiked ? 'red' : 'white');
 
-  
 }

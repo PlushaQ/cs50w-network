@@ -25,6 +25,29 @@
     overflow: hidden;
 }
 
+.post-content {
+    margin-bottom: 1rem;
+    line-height: 1.5;
+}
+
+
+.like-button {
+    background-color: transparent;
+    border: none;
+    padding: 0; 
+    cursor: pointer; 
+    display: inline-block; 
+    margin-top: 1rem;
+}
+
+.created-time {
+    margin-top: 0.5rem; 
+    font-size: 0.8rem; 
+    text-align: right;
+    color: #666; 
+}
+
+
 a.creator-username {
     text-decoration: none;
     color: black;
