@@ -170,13 +170,15 @@ function createPostDiv(post) {
 }
 
 function showNewPost(post) {
-  const pageNum = getPageNumber()
+  const pageNum = getPageNumber();
   if (pageNum === 1) {
     const postsContainer = document.getElementById('posts-container');
     const postDiv = createPostDiv(post);
     postsContainer.prepend(postDiv);
-    postDiv.style.animation = 'showNewPost 0.5s linear 1'
+    postDiv.style.animation = 'showNewPost 0.5s linear 1';
+    postsContainer.lastChild.remove();
   }
+  
 }
 
 
@@ -294,7 +296,7 @@ export function showPosts(criteria) {
     }
 
     let paginator = generatePaginator(data.paginator_data)
-    postsContainer.appendChild(paginator)
+    document.querySelector('#paginator').appendChild(paginator)
 
   });
 }
